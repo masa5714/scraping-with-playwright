@@ -18,11 +18,15 @@ export class Scraping {
   context: BrowserContext | null;
   page: Page | null;
   option: LaunchOptions;
+
+  addCookies: Options["addCookies"];
+
   /** ================================================ **/
-  constructor({ headless = true, addCookies = [], proxy = null, imageEnable = false }: Options) {
+  constructor({ headless = true, proxy = null, imageEnable = false }: Options) {
     this.browser = null;
     this.context = null;
     this.page = null;
+    this.addCookies = [];
     this.option = {
       headless: headless,
       args: [],
@@ -32,11 +36,11 @@ export class Scraping {
   }
   /** ================================================ **/
   // ブラウザの立ち上げを実行する
-  async start({ addCookies = [] }: Options): Promise<string> {
+  async start(): Promise<string> {
     return new Promise(async (resolve, reject) => {
       try {
-        if (this.context && typeof addCookies === "object") {
-          await this.initialBrowser(addCookies);
+        if (this.context && typeof this.addCookies === "object") {
+          await this.initialBrowser();
           resolve("success");
         }
       } catch (e) {
@@ -44,10 +48,11 @@ export class Scraping {
       }
     });
   }
-
+  /** ================================================ **/
+  /** ================================================ **/
   /** ================================================ **/
   // ブラウザの立ち上げ前の準備を行う
-  private async initialBrowser(addCookies: Options["addCookies"]) {
+  private async initialBrowser() {
     this.browser = await chromium.launch(this.option);
 
     if (!this.browser) {
@@ -55,14 +60,14 @@ export class Scraping {
     }
 
     this.context = await this.browser.newContext();
-    await this.setCookies(addCookies); // Cookieのオプションを適用
+    await this.setCookies(); // Cookieのオプションを適用
     this.page = await this.context.newPage();
   }
   /** ================================================ **/
   // Cookieの適用をする
-  private async setCookies(addCookies: Options["addCookies"]) {
-    if (this.context && typeof addCookies === "object") {
-      await this.context.addCookies(addCookies);
+  private async setCookies() {
+    if (this.context && typeof this.addCookies === "object") {
+      await this.context.addCookies(this.addCookies);
     }
   }
   /** ================================================ **/
