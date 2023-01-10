@@ -22,8 +22,14 @@ Playwright をスクレイピング用途で利用する際、便利に使える
         domain: "example.com" // 「example.com」で適用
       }
     ],
-    proxy: ["111.111.111.111:555"],
-    images: false // ブラウザ上で画像データの受信を拒否する
+    proxy: {
+      username: "hoge-name",
+      password: "hoge-pass",
+      items: ["111.111.111.111:5555", "222.222.222.222:5555"]
+    },
+    imageEnable: false // ブラウザ上で画像データの受信を拒否する
   });
+
+  await scraping.start(); // ブラウザの立ち上げを実行
 })();
 ```
