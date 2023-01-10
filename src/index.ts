@@ -2,44 +2,44 @@ import { chromium } from "playwright";
 import { ChromiumBrowser, BrowserContext, Page, LaunchOptions } from "playwright-core";
 
 interface Options {
-  headless: boolean;
-  addCookies: BrowserContext["addCookies"] | [];
-  proxy: {
+  headless?: boolean;
+  addCookies?: BrowserContext["addCookies"] | [];
+  proxy?: {
     [index: string]: string | string[];
     username: string;
     password: string;
     items: string[];
   } | null;
-  imageEnable: boolean;
+  imageEnable?: boolean;
 }
 
 export class Scraping {
   browser: ChromiumBrowser | null;
   context: BrowserContext | null;
   page: Page | null;
-  option: LaunchOptions;
+  options: LaunchOptions;
 
   addCookies: Options["addCookies"];
 
   /** ================================================ **/
-  constructor({ headless = true, proxy = null, imageEnable = false }: Options) {
+  constructor(options?: Options) {
     this.browser = null;
     this.context = null;
     this.page = null;
-    this.addCookies = [];
-    this.option = {
-      headless: headless,
+    this.addCookies = typeof options?.addCookies === "undefined" ? [] : options.addCookies;
+    this.options = {
+      headless: typeof options?.headless === "undefined" ? true : options.headless,
       args: [],
     };
-    this.setOptionProxy(proxy); // プロキシのオプションを追加
-    this.setOptionImage(imageEnable); // 画像の読み込み許可・拒否オプションを追加
+    this.setOptionProxy(typeof options?.proxy === "undefined" ? null : options.proxy); // プロキシのオプションを追加
+    this.setOptionImage(typeof options?.imageEnable === "undefined" ? false : options.imageEnable); // 画像の読み込み許可・拒否オプションを追加
   }
   /** ================================================ **/
   // ブラウザの立ち上げを実行する
   async start(): Promise<string> {
     return new Promise(async (resolve, reject) => {
       try {
-        if (this.context && typeof this.addCookies === "object") {
+        if (typeof this.addCookies === "object") {
           await this.initialBrowser();
           resolve("success");
         }
@@ -53,7 +53,7 @@ export class Scraping {
   /** ================================================ **/
   // ブラウザの立ち上げ前の準備を行う
   private async initialBrowser() {
-    this.browser = await chromium.launch(this.option);
+    this.browser = await chromium.launch(this.options);
 
     if (!this.browser) {
       throw new Error("Google Chromeの起動に失敗しました。");
@@ -73,8 +73,8 @@ export class Scraping {
   /** ================================================ **/
   // プロキシオプションの適用をする
   private setOptionProxy(proxy: Options["proxy"]) {
-    if (proxy !== null) {
-      this.option.proxy = {
+    if (proxy !== null && proxy) {
+      this.options.proxy = {
         server: `http://${this.getTheProxyByRandom(proxy.items)}`,
         username: proxy.username,
         password: proxy.password,
@@ -89,8 +89,9 @@ export class Scraping {
   /** ================================================ **/
   // 画像読み込みの設定を適用する
   private setOptionImage(imageEnable: boolean) {
-    if (imageEnable && this.option.args !== undefined) {
-      this.option.args.push("--blink-settings=imagesEnabled=false");
+    if (!imageEnable && this.options.args) {
+      this.options.args.push("--blink-settings=imagesEnabled=false");
+      console.log(this.options);
     }
   }
 }

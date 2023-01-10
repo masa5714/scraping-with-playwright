@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/masa5714/scraping-with-playwright#readme",
   "devDependencies": {
+    "@playwright/test": "^1.29.2",
     "@types/node": "^18.11.18",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
