@@ -1,5 +1,5 @@
 import { chromium } from "playwright";
-import { ChromiumBrowser, BrowserContext, Page, LaunchOptions } from "playwright-core";
+import { ChromiumBrowser, BrowserContext, Page, LaunchOptions, Locator } from "playwright-core";
 
 interface Options {
   headless?: boolean;
@@ -93,5 +93,17 @@ export class Scraping {
       this.options.args.push("--blink-settings=imagesEnabled=false");
       console.log(this.options);
     }
+  }
+
+  /** ================================================ **/
+  // 複数ある要素に対して1つずつ任意の処理を実行する
+  async eachElementFunction(elements: Locator, func: any): Promise<void> {
+    return new Promise(async (resolve) => {
+      for (let i = 0; i < (await elements.count()); i++) {
+        const element: Locator = await elements.nth(i);
+        await func(element);
+      }
+      resolve();
+    });
   }
 }
