@@ -13,21 +13,22 @@ Playwright をスクレイピング用途で利用する際、便利に使える
 ```javascript
 (async () => {
   const scraping = new Scraping({
-    headless: true // 初期値「true」
+    headless: true, // 初期値「true」
     addCookies: [
-      { // 下記の例は example.com/fuga で hogeキーの「hogehoge_value」が適用される例
+      {
+        // 下記の例は example.com/fuga で hogeキーの「hogehoge_value」が適用される例
         name: "hoge", // Cookieのキー名
         value: "hogehoge_value", // Cookieキー「hoge」の値
         path: "/fuga/", // 「/fuga/」ページで適用
-        domain: "example.com" // 「example.com」で適用
-      }
+        domain: "example.com", // 「example.com」で適用
+      },
     ],
     proxy: {
       username: "hoge-name",
       password: "hoge-pass",
-      items: ["111.111.111.111:5555", "222.222.222.222:5555"]
+      items: ["111.111.111.111:5555", "222.222.222.222:5555"],
     },
-    imageEnable: false // ブラウザ上で画像データの受信を拒否する
+    imageEnable: false, // ブラウザ上で画像データの受信を拒否する
   });
 
   await scraping.start(); // ブラウザの立ち上げを実行
