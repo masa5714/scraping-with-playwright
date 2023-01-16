@@ -1,5 +1,5 @@
 import { chromium } from "playwright";
-import { ChromiumBrowser, BrowserContext, Page, LaunchOptions, Locator } from "playwright-core";
+import { ChromiumBrowser, BrowserContext, Page, LaunchOptions, Locator, BrowserContextOptions } from "playwright-core";
 
 interface Options {
   headless?: boolean;
@@ -11,6 +11,7 @@ interface Options {
     items: string[];
   } | null;
   imageEnable?: boolean;
+  browserSize?: BrowserContextOptions["viewport"];
 }
 
 export class Scraping {
@@ -20,6 +21,7 @@ export class Scraping {
   options: LaunchOptions;
 
   addCookies: Options["addCookies"];
+  browserSize: Options["browserSize"];
 
   /** ================================================ **/
   constructor(options?: Options) {
@@ -27,6 +29,7 @@ export class Scraping {
     this.context = null;
     this.page = null;
     this.addCookies = typeof options?.addCookies === "undefined" ? [] : options.addCookies;
+    this.browserSize = typeof options?.browserSize === "undefined" ? null : options.browserSize;
     this.options = {
       headless: typeof options?.headless === "undefined" ? true : options.headless,
       args: [],
@@ -62,6 +65,9 @@ export class Scraping {
     this.context = await this.browser.newContext();
     await this.setCookies(); // Cookieのオプションを適用
     this.page = await this.context.newPage();
+    if (this.browserSize) {
+      await this.page.setViewportSize(this.browserSize);
+    }
   }
   /** ================================================ **/
   // Cookieの適用をする

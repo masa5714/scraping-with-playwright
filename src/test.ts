@@ -8,7 +8,7 @@ import { Scraping } from ".";
     });
     await scraping.start();
 
-    scraping.page?.goto("https://yahoo.co.jp");
+    scraping.page?.goto("https://www.life-netsuper.jp/ns/introduction");
   } catch (e) {
     console.log(e);
   }
