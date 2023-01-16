@@ -1,5 +1,5 @@
 import { chromium } from "playwright";
-import { ChromiumBrowser, BrowserContext, Page, LaunchOptions, Locator } from "playwright-core";
+import { ChromiumBrowser, BrowserContext, Page, LaunchOptions, Locator, BrowserContextOptions, Response } from "playwright-core";
 
 interface Options {
   headless?: boolean;
@@ -11,6 +11,21 @@ interface Options {
     items: string[];
   } | null;
   imageEnable?: boolean;
+  browserSize?: BrowserContextOptions["viewport"];
+}
+
+interface customFunction {
+  (page: Page, response: Response): void;
+}
+
+interface watchResponseOptions {
+  [index: string]: string | number | customFunction;
+  domain: string;
+  path: string;
+  status: number;
+  contentType: string;
+  successFunction: customFunction;
+  errorFunction: customFunction;
 }
 
 export class Scraping {
@@ -20,6 +35,7 @@ export class Scraping {
   options: LaunchOptions;
 
   addCookies: Options["addCookies"];
+  browserSize: Options["browserSize"];
 
   /** ================================================ **/
   constructor(options?: Options) {
@@ -27,6 +43,7 @@ export class Scraping {
     this.context = null;
     this.page = null;
     this.addCookies = typeof options?.addCookies === "undefined" ? [] : options.addCookies;
+    this.browserSize = typeof options?.browserSize === "undefined" ? null : options.browserSize;
     this.options = {
       headless: typeof options?.headless === "undefined" ? true : options.headless,
       args: [],
@@ -62,6 +79,9 @@ export class Scraping {
     this.context = await this.browser.newContext();
     await this.setCookies(); // Cookieのオプションを適用
     this.page = await this.context.newPage();
+    if (this.browserSize) {
+      await this.page.setViewportSize(this.browserSize);
+    }
   }
   /** ================================================ **/
   // Cookieの適用をする
@@ -91,7 +111,6 @@ export class Scraping {
   private setOptionImage(imageEnable: boolean) {
     if (!imageEnable && this.options.args) {
       this.options.args.push("--blink-settings=imagesEnabled=false");
-      console.log(this.options);
     }
   }
 
@@ -104,6 +123,31 @@ export class Scraping {
         await func(element);
       }
       resolve();
+    });
+  }
+
+  /** ================================================ **/
+  // ネットワークの中身を監視する
+  watchResponse(
+    { domain, path, status, contentType, successFunction, errorFunction }: watchResponseOptions // successFunction: (page: Page, response: Response) => void, // errorFunction: (page: Page, response: Response) => void
+  ) {
+    this.page?.on("response", async (response) => {
+      const responseURL = response.url();
+      const regexDomain = new RegExp(domain);
+      const regexPath = new RegExp(path);
+      if (responseURL.match(regexDomain) && responseURL.match(regexPath)) {
+        const responseHeaders = await response.allHeaders();
+        const statusCode = response.status();
+        if (responseHeaders["content-type"] === contentType) {
+          if (this.page) {
+            if (statusCode === status) {
+              successFunction(this.page, response);
+            } else {
+              errorFunction(this.page, response);
+            }
+          }
+        }
+      }
     });
   }
 }

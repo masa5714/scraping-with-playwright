@@ -29,6 +29,11 @@ Playwright をスクレイピング用途で利用する際、便利に使える
       items: ["111.111.111.111:5555", "222.222.222.222:5555"],
     },
     imageEnable: false, // ブラウザ上で画像データの受信を拒否する
+    browserSize: {
+      // ブラウザサイズ
+      width: 1280, // 横サイズ
+      height: 720, // 縦サイズ
+    },
   });
 
   await scraping.start(); // ブラウザの立ち上げを実行
@@ -58,3 +63,26 @@ items -> プロキシサーバーのホストを指定します。（http:// は
 このオプションはプロキシの帯域幅の節約に有効的です。  
 true -> 画像の読み込みを許可する。  
 false -> 画像の読み込みを拒否する。
+
+# 特定の通信を監視し、動きがあれば任意の関数を実行する方法
+
+```javascript
+scraping.watchResponse(
+  {
+    domain: "hoge.jp",
+    path: "fugafuga",
+    status: 200,
+    contentType: "application/grpc-web+proto",
+  },
+  async (page, response) => {
+    console.log(await response.text());
+  }
+);
+```
+
+上記コードの場合、 `hoge.jp` ドメインの通信のうち、「fugafuga」が含まれるパスの通信を監視する。ステータスコードが 200 で、尚且つ content-type が 「application/grpc-web+proto」の通信が確認できると関数が実行される。
+
+必ず `async (page, response)` として関数を定義してください。
+page には `scraping.page` と同じものが、response には対象の通信のレスポンスデータが格納されています。
+
+例のように `await response.text()` とすることで fugafuga のレスポンスの中身を参照できます。
