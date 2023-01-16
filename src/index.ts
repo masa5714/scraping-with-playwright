@@ -1,5 +1,5 @@
 import { chromium } from "playwright";
-import { ChromiumBrowser, BrowserContext, Page, LaunchOptions, Locator, BrowserContextOptions } from "playwright-core";
+import { ChromiumBrowser, BrowserContext, Page, LaunchOptions, Locator, BrowserContextOptions, Response } from "playwright-core";
 
 interface Options {
   headless?: boolean;
@@ -12,6 +12,14 @@ interface Options {
   } | null;
   imageEnable?: boolean;
   browserSize?: BrowserContextOptions["viewport"];
+}
+
+interface watchResponseOptions {
+  [index: string]: string | number;
+  domain: string;
+  path: string;
+  status: number;
+  contentType: string;
 }
 
 export class Scraping {
@@ -110,6 +118,25 @@ export class Scraping {
         await func(element);
       }
       resolve();
+    });
+  }
+
+  /** ================================================ **/
+  // ネットワークの中身を監視する
+  watchResponse({ domain, path, status, contentType }: watchResponseOptions, customFunction: (page: Page, response: Response) => void) {
+    this.page?.on("response", async (response) => {
+      const responseURL = response.url();
+      const regexDomain = new RegExp(domain);
+      const regexPath = new RegExp(path);
+      if (responseURL.match(regexDomain) && responseURL.match(regexPath)) {
+        const responseHeaders = await response.allHeaders();
+        const statusCode = response.status();
+        if (statusCode === status && responseHeaders["content-type"] === contentType) {
+          if (this.page) {
+            customFunction(this.page, response);
+          }
+        }
+      }
     });
   }
 }
