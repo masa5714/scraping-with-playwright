@@ -14,12 +14,18 @@ interface Options {
   browserSize?: BrowserContextOptions["viewport"];
 }
 
+interface customFunction {
+  (page: Page, response: Response): void;
+}
+
 interface watchResponseOptions {
-  [index: string]: string | number;
+  [index: string]: string | number | customFunction;
   domain: string;
   path: string;
   status: number;
   contentType: string;
+  successFunction: customFunction;
+  errorFunction: customFunction;
 }
 
 export class Scraping {
@@ -122,7 +128,9 @@ export class Scraping {
 
   /** ================================================ **/
   // ネットワークの中身を監視する
-  watchResponse({ domain, path, status, contentType }: watchResponseOptions, customFunction: (page: Page, response: Response) => void) {
+  watchResponse(
+    { domain, path, status, contentType, successFunction, errorFunction }: watchResponseOptions // successFunction: (page: Page, response: Response) => void, // errorFunction: (page: Page, response: Response) => void
+  ) {
     this.page?.on("response", async (response) => {
       const responseURL = response.url();
       const regexDomain = new RegExp(domain);
@@ -130,9 +138,13 @@ export class Scraping {
       if (responseURL.match(regexDomain) && responseURL.match(regexPath)) {
         const responseHeaders = await response.allHeaders();
         const statusCode = response.status();
-        if (statusCode === status && responseHeaders["content-type"] === contentType) {
+        if (responseHeaders["content-type"] === contentType) {
           if (this.page) {
-            customFunction(this.page, response);
+            if (statusCode === status) {
+              successFunction(this.page, response);
+            } else {
+              errorFunction(this.page, response);
+            }
           }
         }
       }
