@@ -105,7 +105,6 @@ export class Scraping {
   private setOptionImage(imageEnable: boolean) {
     if (!imageEnable && this.options.args) {
       this.options.args.push("--blink-settings=imagesEnabled=false");
-      console.log(this.options);
     }
   }
 
