@@ -74,8 +74,10 @@ scraping.watchResponse(
     status: 200,
     contentType: "application/grpc-web+proto",
   },
-  async (page, response) => {
+  async (page, response, status) => {
+    console.log(await page.title());
     console.log(await response.text());
+    console.log(status);
   }
 );
 ```
