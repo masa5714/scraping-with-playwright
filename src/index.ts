@@ -114,11 +114,11 @@ export class Scraping {
 
   /** ================================================ **/
   // 複数ある要素に対して1つずつ任意の処理を実行する
-  async eachElementFunction(elements: Locator, func: any): Promise<void> {
+  async eachElementFunction(elements: Locator, func: (element: Locator) => void): Promise<void> {
     return new Promise(async (resolve) => {
       for (let i = 0; i < (await elements.count()); i++) {
         const element: Locator = await elements.nth(i);
-        await func(element);
+        func(element);
       }
       resolve();
     });
