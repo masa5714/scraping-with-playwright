@@ -150,4 +150,17 @@ export class Scraping {
       }
     });
   }
+
+  // Next.jsで作られたサイトのpropsデータを取得する
+  getPropsNextJS() {
+    return new Promise(async (resolve, reject) => {
+      if (this.page) {
+        const nextDataElement = await this.page.locator("#__NEXT_DATA__");
+        const nextDataText = await nextDataElement.innerText();
+        const nextData = JSON.parse(nextDataText);
+        resolve(nextData.props.pageProps);
+      }
+      reject("propsデータの取得に失敗しました。Next.jsで制作されていない可能性も視野に入れてください。");
+    });
+  }
 }

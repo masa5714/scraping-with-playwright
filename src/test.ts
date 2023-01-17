@@ -1,11 +1,9 @@
 import { Scraping } from ".";
+import { Locator } from "playwright-core";
 
 (async () => {
   try {
-    const scraping = new Scraping({
-      headless: false,
-      imageEnable: false,
-    });
+    const scraping = new Scraping();
     await scraping.start();
 
     scraping.page?.goto("https://www.life-netsuper.jp/ns/introduction");
