@@ -15,7 +15,7 @@ interface Options {
 }
 
 interface customFunction {
-  (page: Page, response: Response): void;
+  (page: Page, response: Response, result: boolean): void;
 }
 
 interface watchResponseOptions {
@@ -24,8 +24,6 @@ interface watchResponseOptions {
   path: string;
   status: number;
   contentType: string;
-  successFunction: customFunction;
-  errorFunction: customFunction;
 }
 
 export class Scraping {
@@ -128,9 +126,7 @@ export class Scraping {
 
   /** ================================================ **/
   // ネットワークの中身を監視する
-  watchResponse(
-    { domain, path, status, contentType, successFunction, errorFunction }: watchResponseOptions // successFunction: (page: Page, response: Response) => void, // errorFunction: (page: Page, response: Response) => void
-  ) {
+  watchResponse({ domain, path, status, contentType }: watchResponseOptions, customFunction: (page: Page, response: Response, result: boolean) => void) {
     this.page?.on("response", async (response) => {
       const responseURL = response.url();
       const regexDomain = new RegExp(domain);
@@ -141,9 +137,9 @@ export class Scraping {
         if (responseHeaders["content-type"] === contentType) {
           if (this.page) {
             if (statusCode === status) {
-              successFunction(this.page, response);
+              customFunction(this.page, response, true);
             } else {
-              errorFunction(this.page, response);
+              customFunction(this.page, response, false);
             }
           }
         }
