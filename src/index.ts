@@ -11,6 +11,7 @@ interface Options {
     items: string[];
   } | null;
   imageEnable?: boolean;
+  webFontEnable?: boolean;
   browserSize?: BrowserContextOptions["viewport"];
 }
 
@@ -48,6 +49,7 @@ export class Scraping {
     };
     this.setOptionProxy(typeof options?.proxy === "undefined" ? null : options.proxy); // プロキシのオプションを追加
     this.setOptionImage(typeof options?.imageEnable === "undefined" ? false : options.imageEnable); // 画像の読み込み許可・拒否オプションを追加
+    this.setOptionWebFont(typeof options?.webFontEnable === "undefined" ? false : options.webFontEnable); // Webフォントの読み込み許可・拒否オプションを追加
   }
   /** ================================================ **/
   // ブラウザの立ち上げを実行する
@@ -109,6 +111,14 @@ export class Scraping {
   private setOptionImage(imageEnable: boolean) {
     if (!imageEnable && this.options.args) {
       this.options.args.push("--blink-settings=imagesEnabled=false");
+    }
+  }
+
+  /** ================================================ **/
+  // Webフォントの読み込みを適用する
+  private setOptionWebFont(webFontEnable: boolean) {
+    if (!webFontEnable && this.options.args) {
+      this.options.args.push("--disable-remote-fonts");
     }
   }
 
