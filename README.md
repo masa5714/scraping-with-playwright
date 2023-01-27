@@ -29,6 +29,7 @@ Playwright をスクレイピング用途で利用する際、便利に使える
       items: ["111.111.111.111:5555", "222.222.222.222:5555"],
     },
     imageEnable: false, // ブラウザ上で画像データの受信を拒否する
+    webFontEnable: false, // Webフォントのデータの受信を拒否する
     browserSize: {
       // ブラウザサイズ
       width: 1280, // 横サイズ
@@ -88,3 +89,12 @@ scraping.watchResponse(
 page には `scraping.page` と同じものが、response には対象の通信のレスポンスデータが格納されています。
 
 例のように `await response.text()` とすることで fugafuga のレスポンスの中身を参照できます。
+
+# Next.js の props データを取得する
+
+```javascript
+const props = await scraping.getPropsNextJS();
+```
+
+上記の関数を実行すると、Next.js で制作された Web サイトの props データを JSON 形式 で取得できます。
+`id="__NEXT_DATA__"` が付与された script タグを innerText() で取得しているだけでの簡単なものです。場合によっては使えないこともありますのでご注意ください。
