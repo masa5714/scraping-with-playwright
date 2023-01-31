@@ -97,3 +97,26 @@ const props = await scraping.getPropsNextJS();
 
 上記の関数を実行すると、Next.js で制作された Web サイトの props データを JSON 形式 で取得できます。
 `id="__NEXT_DATA__"` が付与された script タグを innerText() で取得しているだけでの簡単なものです。場合によっては使えないこともありますのでご注意ください。
+
+# gRPC のレスポンスデータにフィルタを使いやすい状態で受け取る
+
+※Flutter on Web で制作され、CanvasKit が使われているサイトで検証しました。これに当てはまるサイトは大変稀なため、この関数は有効に動かないかもしれません。その場合、issues に対象サイトの URL を添えてお教え頂けますと幸いです。
+
+```javascript
+scraping.watchResponse(
+  {
+    domain: "hogehoge.jp",
+    path: "CheckDeliveryArea",
+    status: 200,
+    contentType: "application/grpc-web+proto",
+  },
+  async (page, response) => {
+    const gRPC = scraping.gRPC(await response.text());
+    console.log(gRPC.text);
+  }
+);
+```
+
+通常、 `await response.text()` の中身にはラテン文字が含まれています。  
+一般的にラテン文字はスクレイピングでは不要な文字列となりますので、 `scraping.gRPC()` 関数 で不要なラテン文字を取り除くことができます。
+また、末尾に含まれる grpc-status の文字列も不要ですので、こちらも併せて削除してくれます。

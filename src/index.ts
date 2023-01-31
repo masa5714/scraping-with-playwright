@@ -157,6 +157,79 @@ export class Scraping {
     });
   }
 
+  // gRPCのデータを処理する
+  gRPC(text: string) {
+    const removedLatinCharacters = this.removeLatinCharacters(text);
+    let gRPCStatus = removedLatinCharacters.match(/(�grpc-status|grpc-status).*/g);
+    let status = "Playwright_Failed";
+    if (gRPCStatus) {
+      const gRPCStatusNumber = gRPCStatus[0].replace(/(�grpc-status\:|grpc-status\:)/g, "");
+      switch (gRPCStatusNumber) {
+        case "0":
+          status = "OK";
+          break;
+        case "1":
+          status = "CANCELLED";
+          break;
+        case "2":
+          status = "UNKNOWN";
+          break;
+        case "3":
+          status = "INVALID_ARGUMENT";
+          break;
+        case "4":
+          status = "DEADLINE_EXCEEDED";
+          break;
+        case "5":
+          status = "NOT_FOUND";
+          break;
+        case "6":
+          status = "ALREADY_EXISTS";
+          break;
+        case "7":
+          status = "PERMISSION_DENIED";
+          break;
+        case "8":
+          status = "RESOURCE_EXHAUSTED";
+          break;
+        case "9":
+          status = "FAILED_PRECONDITION";
+          break;
+        case "10":
+          status = "ABORTED";
+          break;
+        case "11":
+          status = "OUT_OF_RANGE";
+          break;
+        case "12":
+          status = "UNIMPLEMENTED";
+          break;
+        case "13":
+          status = "INTERNAL";
+          break;
+        case "14":
+          status = "UNAVAILABLE";
+          break;
+        case "15":
+          status = "DATA_LOSS";
+          break;
+        case "16":
+          status = "UNAUTHENTICATED";
+          break;
+      }
+    }
+
+    return {
+      text: removedLatinCharacters.replace(/(�(.*)grpc-status).*/g, ""),
+      status: status,
+    };
+  }
+
+  removeLatinCharacters = (text: string) => {
+    let result = text.replace(/[\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff]/g, "");
+    return result;
+  };
+
   // Next.jsで作られたサイトのpropsデータを取得する
   getPropsNextJS() {
     return new Promise(async (resolve, reject) => {
