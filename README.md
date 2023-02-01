@@ -64,6 +64,20 @@ Playwright をスクレイピング用途で利用する際、便利に使える
 
 プロキシサービスを利用するにあたって最も注意すべきが「帯域幅」の節約です。帯域幅とは、データ通信量のことを指します。データサイズが大きくなるとスクレイピングできるページ数も限られてしまいます。scraping-with-playwright では画像と Web フォントをデフォルトで無効化しており、予め帯域幅の節約を考慮した作りになっています。
 
+# 通常の Playwright の機能を利用する
+
+`scraping` でラップしておりますが、通常の Playwright の機能はそのまま使えます。
+
+例：
+
+```javascript
+(async () => {
+  const scraping = new Scraping();
+  const element = await scraping.page.locator("body");
+  console.log(await element.innerText());
+})();
+```
+
 # 特定の通信を監視し、動きがあれば任意の関数を実行する方法
 
 ```javascript

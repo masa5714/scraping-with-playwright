@@ -1,8 +1,7 @@
 version: 2
-enable-beta-ecosystems: true
 updates:
-  - package-ecosystem: "pub"
+  # Maintain dependencies for npm
+  - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 10
