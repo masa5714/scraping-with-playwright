@@ -1,6 +1,6 @@
 {
   "name": "scraping-with-playwright",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
@@ -34,6 +34,7 @@
     "typescript": "^4.9.4"
   },
   "dependencies": {
-    "playwright": "^1.29.2"
+    "playwright": "^1.29.2",
+    "playwright-core": "^1.30.0"
   }
 }
