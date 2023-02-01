@@ -1,3 +1,4 @@
+import { rejects } from "assert";
 import { chromium } from "playwright";
 import { ChromiumBrowser, BrowserContext, Page, LaunchOptions, Locator, BrowserContextOptions, Response } from "playwright-core";
 
@@ -229,6 +230,33 @@ export class Scraping {
     let result = text.replace(/[\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff]/g, "");
     return result;
   };
+
+  // 指定した回数だけ実行を行い、成功するまでリトライする。（デフォルト5回、3秒毎に実行）
+  // getElementsRetrySuccessfully<T>(cssSelector: string = "", retryCount: number = 5, retryInterval: number = 3000): Promise<T> {
+  //   return new Promise(async (resolve, reject) => {
+  //     let retryCounter = -1;
+  //     while (true) {
+  //       retryCounter = retryCounter + 1;
+  //       if (retryCounter > retryCount) {
+  //         // リトライ上限を超えたのでエラー扱いにして終了。
+  //         reject(new Error(`${cssSelector}の取得に失敗しました。`));
+  //         break;
+  //       } else {
+  //         if (retryCounter !== 0) {
+  //           console.log(`${cssSelector}の取得をリトライしています。（${retryCounter}回目）`);
+  //           await this.page?.waitForTimeout(retryInterval);
+  //         }
+  //         const targetElements = await this.page?.locator(cssSelector);
+  //         if (targetElements) {
+  //           if ((await targetElements.count()) > 0) {
+  //             resolve(targetElements);
+  //             break;
+  //           }
+  //         }
+  //       }
+  //     }
+  //   });
+  // }
 
   // Next.jsで作られたサイトのpropsデータを取得する
   getPropsNextJS() {

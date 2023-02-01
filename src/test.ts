@@ -23,10 +23,19 @@ import { Locator } from "playwright-core";
       }
     );
 
-    await scraping.page?.waitForTimeout(5000);
-    await scraping.page?.mouse.click(640, 686);
-    await scraping.page?.locator("input.flt-text-editing").fill("1000000");
-    await scraping.page?.mouse.click(640, 760);
+    // try {
+    //   const hoge = await scraping.getElementsRetrySuccessfully("body", 3, 5000);
+    //   if (hoge) {
+    //     console.log(await hoge.innerText());
+    //   }
+    // } catch (e) {
+    //   console.log("エラーが発生しました。");
+    // }
+
+    // await scraping.page?.waitForTimeout(5000);
+    // await scraping.page?.mouse.click(640, 686);
+    // await scraping.page?.locator("input.flt-text-editing").fill("1000000");
+    // await scraping.page?.mouse.click(640, 760);
   } catch (e) {
     console.log(e);
   }
