@@ -1,6 +1,6 @@
 {
   "name": "scraping-with-playwright",
-  "version": "1.0.7",
+  "version": "1.0.9",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/esm/index.js",

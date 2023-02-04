@@ -78,6 +78,27 @@ Playwright をスクレイピング用途で利用する際、便利に使える
 })();
 ```
 
+# 要素取得に失敗する可能性がある場合、自動でリトライしてくれる関数を用意しています。
+
+```javascript
+async () => {
+  // 要素取得に成功するまでリトライ
+  try {
+    // 第一引数： 対象の要素（CSSセレクタ -> Locator）
+    // 第二引数： リトライ上限数（これを超えた場合エラー扱いとなる。初期値5回）
+    // 第三引数： リトライの間隔（この場合5秒後に再実行。初期値3秒）
+    const elements = await scraping.getElementsRetrySuccessfully("#hoge", 10, 5000);
+  } catch (e) {
+    if (e instanceof Error) {
+      console.log(e.message);
+    }
+  }
+};
+```
+
+内部的には page.locator(); のため、通常の Playwright と同じ感覚で利用できます。
+最低限、第一引数だけ指定すれば利用できます。デフォルトでは 5 回リトライ、3 秒後に再実行としています。
+
 # 特定の通信を監視し、動きがあれば任意の関数を実行する方法
 
 ```javascript
