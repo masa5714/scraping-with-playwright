@@ -244,6 +244,7 @@ export class Scraping {
         } else {
           if (retryCounter !== 0) {
             console.log(`${cssSelector}の取得をリトライしています。（${retryCounter}回目）`);
+            await this.page?.reload();
             await this.page?.waitForTimeout(retryInterval);
           }
           const targetElements = await this.page?.locator(cssSelector);
